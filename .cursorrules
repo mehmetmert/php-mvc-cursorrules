@@ -1,0 +1,38 @@
+CMS Modular Project Rules
+
+    Directory Structure: Use the prescribed top-level layout: /app for application logic (controllers, models, views), /core for framework core code (base classes, middleware), /config for configurations (database, routes, settings), /themes for UI themes (each theme in its own folder with Tailwind assets), and /modules for independent modules. Do not introduce new root directories; any addition must fit within these existing directories
+    stackoverflow.com
+    . For example, keep all public assets in public/, application-specific code in app/, and modules under modules/
+    stackoverflow.com
+    .
+
+    Adding New Modules: Place each new module in modules/<ModuleName>/. Follow an MVC substructure within that folder if needed (e.g. controllers/, models/, views/ inside the module). Avoid naming collisions by choosing unique module names. Use an autoloader or manifest (located in core/) that automatically detects new modules; rebuild or update this manifest whenever a module is added or removed
+    stackoverflow.com
+    stackoverflow.com
+    . Do not modify existing modules when adding a new one. Register any new module in the routing configuration or module registry, and document the change (module name, purpose) in process.md.
+
+
+    stackoverflow.com
+    Adding Views and Controllers: When creating a new controller, place its class in the appropriate app/controllers/ or the relevant module’s controllers/ folder. Create corresponding view templates in views/ or the theme’s template directory. Follow the URL pattern /module/controller/action/params; for example, /videos/view/1 should route to VideosController->view() in the default module
+    stackoverflow.com
+    . Update routing configuration (in /config/routes.php or similar) to include any new paths, but rely on the router to handle most paths by convention. Always test that new routes do not override existing ones, and maintain fallback behavior (e.g. if the URL lacks a module prefix, use the default module as shown in the example
+    stackoverflow.com
+    ).
+
+    Backward Compatibility: Avoid breaking existing functionality. Never delete or rename files without providing an alias or route redirect. If restructuring is absolutely necessary, implement compatibility layers or deprecation warnings. For database changes, use migration scripts that preserve old data. Record any deprecation or compatibility decision in process.md before making code changes. The goal is that old URLs and code still function (or safely 404/redirect), so existing features continue working when the system is updated.
+
+    Version Control & Change Logging: Use GitHub for all code. Commit changes frequently with clear messages. Every feature or fix must be logged in a process.md file at the project root. In process.md, provide the date, author, summary of the change (e.g. “Added Blog module” or “Created ProductController and view”), and any context or rationale. This file serves as a chronological changelog. Ensure each process.md entry corresponds to a distinct commit or pull request, and include references to affected files or configuration changes for traceability.
+
+    Multi-language Support: Implement internationalization by using language codes in URLs and storing translations. For example, use URL prefixes like /en/, /fr/, /nl/ to load content in different languages. Manage translations either by having separate database fields/columns per language (if the set of languages is fixed) or by separate translation tables (if languages are dynamic) as needed. Store language files or dictionaries in a directory such as /config/languages/ or in the database, and fall back to a default language if a translation is missing.
+
+    Security and Best Practices: Implement middleware in core/middleware/ to enforce CSRF and XSS protection. Add CSRF tokens to all forms and validate them on submission as OWASP recommends
+    cheatsheetseries.owasp.org
+    . Escape all user-generated output using htmlspecialchars() or a template engine to prevent XSS. Use prepared statements (PDO) for database interactions to avoid SQL injection. For form validation, create a reusable Validator class (e.g. in app/Validation/) with common rules (required, email format, length checks, etc.). Always validate and sanitize input before processing, which helps prevent SQL injection and XSS
+    mailtrap.io
+    . For authentication, use PHP 8.1’s built-in functions (password_hash, password_verify) and regenerate session IDs on login.
+
+    Role-Based Access Control: Define user roles and permissions in the database (e.g. roles and permissions tables). After authentication, check the user’s role against required permissions for each controller/action in middleware or a base controller. Restrict access to admin modules or actions by role. Keep the role hierarchy simple (minimize roles as recommended) to avoid complexity
+    sitepoint.com
+    . Changes to roles or permissions should be managed through an admin interface and logged in process.md.
+
+    Development Conventions and Focus: Follow the prompt strictly. Do not refactor or reorganize the existing code structure; only add to it. Use only core PHP features (no Composer packages). Leverage PHP 8.1 features like type declarations and attributes, but implement everything (routing, i18n, validation, etc.) manually or in simple libraries you write. Since the admin panel and themes use Tailwind CSS, ensure any new HTML/CSS components use Tailwind classes consistently. Keep code consistent: use PSR-inspired naming (classes in StudlyCase, methods in camelCase) even without a formal standard. Before coding any feature, outline the steps in process.md. Each code change should be minimalistic yet clear, fully documented in process.md, and reversible if issues arise.

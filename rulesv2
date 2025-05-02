@@ -1,0 +1,99 @@
+📜 .cursorrules (Modular PHP CMS Project Rules)
+
+📁 Directory Structure
+
+The base structure must follow this layout:
+
+/app        → Controllers, Models, Views  
+/core       → Core system, classes, middleware  
+/config     → Configurations, routes, database settings  
+/content    → Custom themes and modules  
+    ├── /themes     → Each theme in its own folder, using Tailwind CSS  
+    └── /modules    → Each module in its own folder  
+/admin      → Admin panel files (Tailwind-based, separate from modules)  
+/public     → Public assets: CSS, JS, images, uploads
+
+No other root-level folders should be created unless explicitly stated.
+
+🧩 Modules (content/modules)
+
+- All modules are placed inside content/modules/<ModuleName>/.
+- Each module may include controllers/, models/, views/ directories.
+- Modules must be auto-discoverable by the core system.
+- Existing modules must not break due to additions.
+- Routes can be defined inside the module or registered in config/routes.php.
+- All changes must be logged in a process.md file (name, purpose, date, etc.).
+
+🎨 Themes (content/themes)
+
+- Themes go inside content/themes/<ThemeName>/.
+- Must use Tailwind CSS for styling.
+- Theme system should dynamically load templates from here.
+- Active theme config is defined in config/config.php or similar.
+- Theme folder may include views/, partials/, layouts/, and assets/.
+
+⚙️ MVC System
+
+- New controllers go in app/controllers/ or module's controllers/.
+- Views should be either in app/views/ or in themes.
+- Controller path: /module/controller/action/param
+- Route collisions should gracefully fallback.
+
+🔐 Security Rules
+
+- Use htmlspecialchars, strip_tags for XSS protection.
+- Every form must include and validate CSRF tokens.
+- Use PDO + prepared statements for DB operations.
+- Passwords: use password_hash and password_verify.
+- Middleware should cover:  
+  - Auth  
+  - CSRF  
+  - Input sanitization  
+  - Role-based access control
+
+✅ Form Validation
+
+- A centralized validator (e.g., app/Validation/Validator.php) should be created.
+- Built-in rules: required, email, min/maxLength, numeric, etc.
+- Input should be validated before and after submission.
+- Validation errors must be shown clearly to users.
+
+🌐 Multilingual Support
+
+- URL-based structure: /en/, /tr/, etc.
+- Translation files inside config/lang/en.php, tr.php, etc.
+- Fallback to default language if translation is missing.
+- Future: translations may be editable via the admin panel.
+
+👥 User Authorization
+
+- Roles and permissions should be stored in DB.
+- Admin panel must be restricted to authorized users only.
+- Regenerate session ID after login.
+- Optionally, session fingerprinting via browser/IP can be added.
+
+🔁 Backward Compatibility
+
+- Older modules/themes/routes must keep working.
+- If needed, use aliasing (core/aliases.php) for legacy support.
+- Database changes must not break old functionality.
+- All changes logged in process.md.
+
+🗂️ Logging & Versioning
+
+- Every operation must be written to process.md:  
+  - Developer  
+  - Date  
+  - What was done  
+  - Why  
+  - Affected files  
+- GitHub must be used for version control.
+- Commits must be short and meaningful.
+
+📌 General Rules
+
+- PHP version: 8.1 or higher.
+- Composer or package managers should not be used.
+- Tailwind CSS must be used for all UI design.
+- System must be extensible, modular, and scalable.
+- Each prompt must only add functionality, never break or refactor existing structure.
